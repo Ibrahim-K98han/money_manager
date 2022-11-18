@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:money_manager/pages/homepage.dart';
 import 'package:money_manager/theme.dart';
 
-void main() {
+void main() async{
+  await Hive.initFlutter();
+  await Hive.openBox('money');
   runApp(const MyApp());
 }
 

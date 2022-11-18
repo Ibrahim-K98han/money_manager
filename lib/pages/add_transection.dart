@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_manager/controllers/db_helper.dart';
 
 import '../static.dart';
 
@@ -31,9 +32,24 @@ class _AddTransectionState extends State<AddTransection> {
     'Dec'
   ];
 
+  Future<void> _selectDate(BuildContext context)async{
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2020, 12),
+        lastDate: DateTime(2100, 01),
+    );
+    if(picked != null && picked != selectedDate){
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffe2e7ef),
       appBar: AppBar(
         toolbarHeight: 0.0,
       ),
@@ -161,7 +177,9 @@ class _AddTransectionState extends State<AddTransection> {
           SizedBox(
             height: 50,
             child: TextButton(
-              onPressed: (){},
+              onPressed: (){
+                _selectDate(context);
+              },
               style: ButtonStyle(
                 padding: MaterialStateProperty.all(EdgeInsets.zero)
               ),
@@ -191,7 +209,14 @@ class _AddTransectionState extends State<AddTransection> {
           SizedBox(
             height: 50,
             child: ElevatedButton(
-              onPressed: (){},
+              onPressed: (){
+                if(amount !=null && note.isNotEmpty){
+                  DbHelper dbHelper = DbHelper();
+                  dbHelper.addData(amount!, selectedDate!, note, type);
+                }else{
+                  print('Not All values provided !');
+                }
+              },
               child: const Text(
                 'Add',
                 style: TextStyle(
