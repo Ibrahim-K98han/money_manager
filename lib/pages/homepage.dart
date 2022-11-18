@@ -15,11 +15,29 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   DbHelper dbHelper = DbHelper();
+  int totalBalance = 0;
+  int totalIncome = 0;
+  int totalExpense = 0;
+
+  getTotalBalance(Map entireData){
+    totalExpense = 0;
+    totalIncome = 0;
+    totalBalance = 0;
+    entireData.forEach((key, value) {
+      if(value['type'] == 'Income'){
+        totalBalance += (value['amount'] as int);
+        totalIncome += (value['amount'] as int);
+      }else{
+        totalBalance -= (value['amount'] as int);
+        totalExpense += (value['amount'] as int);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffe2e7ef),
+      backgroundColor: const Color(0xffe2e7ef),
       appBar: AppBar(
         toolbarHeight: 0.0,
       ),
@@ -29,7 +47,13 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const AddTransection()));
+              .push(MaterialPageRoute(builder: (context) => const AddTransection()
+          )
+          ).whenComplete((){
+            setState(() {
+
+            });
+          });
         },
         child: const Icon(
           Icons.add,
@@ -40,14 +64,15 @@ class _HomePageState extends State<HomePage> {
         future: dbHelper.fetch(),
         builder: (context, snapshot) {
           if(snapshot.hasError){
-            return Center(
+            return const Center(
               child: Text('Unexpected Error !'),);
           }if(snapshot.hasData){
             if(snapshot.data!.isEmpty){
-              return Center(
+              return const Center(
                 child: Text('No value found !'),
               );
             }
+            getTotalBalance(snapshot.data!);
             return ListView(
               children: [
                 Padding(
@@ -87,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white70,
                         ),
                         padding: const EdgeInsets.all(12.0),
-                        child: Icon(
+                        child: const Icon(
                             Icons.settings,
                             size: 32,
                             color: Color(0xff3e454c),
@@ -102,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                     12,
                   ),
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
                           PrimaryColor,
@@ -113,10 +138,10 @@ class _HomePageState extends State<HomePage> {
                         Radius.circular(24)
                       )
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Total Balance',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -124,26 +149,26 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 12,),
+                        const SizedBox(height: 12,),
                         Text(
-                          'BDT 2500',
+                          'BDT $totalBalance',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 26,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 12,),
+                        const SizedBox(height: 12,),
                         Padding(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               cardIncome(
-                                '1200'
+                                totalIncome.toString(),
                               ),
                               cardExpense(
-                                '900'
+                               totalExpense.toString(),
                               )
                             ],
                           ),
@@ -151,6 +176,34 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    'Recent Expenses',
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w900
+                    ),
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index){
+                    Map dataAtIndex = snapshot.data![index];
+                    if(dataAtIndex['type'] == 'Income'){
+                      return incomeTile(
+                          dataAtIndex['amount'], dataAtIndex['note']
+                      );
+                    }else{
+                      return expenseTile(
+                        dataAtIndex['amount'], dataAtIndex['note']
+                      );
+                    }
+                  },
                 )
               ],
             );
@@ -172,18 +225,18 @@ class _HomePageState extends State<HomePage> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20)
           ),
-          padding: EdgeInsets.all(6),
+          padding: const EdgeInsets.all(6),
+          margin: const EdgeInsets.only(right: 10),
           child: Icon(
             Icons.arrow_downward,
             size: 20,
             color: Colors.green[700],
           ),
-          margin: EdgeInsets.only(right: 10),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Income',
               style: TextStyle(
                 fontSize: 14,
@@ -192,7 +245,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Text(
              value,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Colors.white
@@ -212,18 +265,18 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(20)
           ),
-          padding: EdgeInsets.all(6),
+          padding: const EdgeInsets.all(6),
+          margin: const EdgeInsets.only(right: 10),
           child: Icon(
             Icons.arrow_upward,
             size: 20,
             color: Colors.red[700],
           ),
-          margin: EdgeInsets.only(right: 10),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Expense',
               style: TextStyle(
                   fontSize: 14,
@@ -232,7 +285,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Colors.white
@@ -243,5 +296,81 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
+  Widget expenseTile(int value, String note){
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xffced4eb),
+        borderRadius: BorderRadius.circular(8)
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                  Icons.arrow_circle_up_outlined,
+                size: 25,
+                color: Colors.red[700],
+              ),
+              const SizedBox(width: 4,),
+              const Text(
+                  'Expense',
+                style: TextStyle(
+                  fontSize: 18
+                ),
+              )
+            ],
+          ),
+          Text(
+            ' - $value',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
+  Widget incomeTile(int value, String note){
+    return Container(
+      margin: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+          color: const Color(0xffced4eb),
+          borderRadius: BorderRadius.circular(8)
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.arrow_circle_down_outlined,
+                size: 25,
+                color: Colors.green[700],
+              ),
+              const SizedBox(width: 4,),
+              const Text(
+                'Income',
+                style: TextStyle(
+                    fontSize: 18
+                ),
+              )
+            ],
+          ),
+          Text(
+            ' + $value',
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
