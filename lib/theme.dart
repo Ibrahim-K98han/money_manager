@@ -68,9 +68,9 @@ const MaterialColor PrimaryMaterialColor = MaterialColor(
 
 ThemeData myTheme = ThemeData(
   fontFamily: "customFont",
-  primaryColor: const Color(0xff15049b),
+  primaryColor: Color(0xff15049b),
   primarySwatch: PrimaryMaterialColor,
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     titleTextStyle: TextStyle(
       fontSize: 20.0,
       fontFamily: "customFont",
